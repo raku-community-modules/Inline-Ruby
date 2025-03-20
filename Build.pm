@@ -1,4 +1,3 @@
-use v6;
 use Shell::Command;
 use LibraryMake;
 
@@ -36,4 +35,4 @@ class Build {
   }
 }
 
-# vim: ft=perl6
+# vim: ft=raku

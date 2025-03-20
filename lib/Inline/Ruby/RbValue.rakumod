@@ -3,7 +3,7 @@
 class Inline::Ruby::RbValue is repr('CPointer') {
 
   use NativeCall;
-  constant RUBY = %?RESOURCES<libraries/rbhelper>.Str;
+  constant RUBY = %?RESOURCES<libraries/rbhelper>;
 
   enum ruby_value_type (
     RUBY_T_NONE     => 0x00,
@@ -51,71 +51,71 @@ class Inline::Ruby::RbValue is repr('CPointer') {
       is native(RUBY) { * }
 
 
-  # NativeCall routines for rb->p6 conversions
-  sub p6_rb_type      (Inline::Ruby::RbValue $value) returns int32 is native(RUBY) { * }
-  sub rb_to_p6_fixnum (Inline::Ruby::RbValue $value) returns int32 is native(RUBY) { * }
-  sub rb_to_p6_string (Inline::Ruby::RbValue $value) returns Str   is native(RUBY) { * }
-  sub rb_to_p6_dbl    (Inline::Ruby::RbValue $value) returns num64 is native(RUBY) { * }
+  # NativeCall routines for rb->raku conversions
+  sub raku_rb_type      (Inline::Ruby::RbValue $value) returns int32 is native(RUBY) { * }
+  sub rb_to_raku_fixnum (Inline::Ruby::RbValue $value) returns int32 is native(RUBY) { * }
+  sub rb_to_raku_string (Inline::Ruby::RbValue $value) returns Str   is native(RUBY) { * }
+  sub rb_to_raku_dbl    (Inline::Ruby::RbValue $value) returns num64 is native(RUBY) { * }
 
   # Array helpers
-  sub p6_rb_array_length (Inline::Ruby::RbValue $value)
+  sub raku_rb_array_length (Inline::Ruby::RbValue $value)
       returns int32
       is native(RUBY) { * }
   sub rb_ary_entry       (Inline::Ruby::RbValue $value, int32 $offset)
       returns Inline::Ruby::RbValue
       is native(RUBY) { * }
 
-  multi method TO-P6() {
-    self.TO-P6(p6_rb_type(self))
+  multi method TO-RAKU() {
+    self.TO-RAKU(raku_rb_type(self))
   }
 
-  multi method TO-P6($type where RUBY_T_FIXNUM) {
+  multi method TO-RAKU($type where RUBY_T_FIXNUM) {
     self.Numeric
   }
 
-  multi method TO-P6($type where RUBY_T_TRUE) {
+  multi method TO-RAKU($type where RUBY_T_TRUE) {
     self.Bool
   }
 
-  multi method TO-P6($type where RUBY_T_FALSE) {
+  multi method TO-RAKU($type where RUBY_T_FALSE) {
     self.Bool
   }
 
-  multi method TO-P6($type where RUBY_T_NIL) {
+  multi method TO-RAKU($type where RUBY_T_NIL) {
     Any;
   }
 
-  multi method TO-P6($type where RUBY_T_STRING) {
+  multi method TO-RAKU($type where RUBY_T_STRING) {
     self.Str
   }
 
-  multi method TO-P6($type where RUBY_T_FLOAT) {
+  multi method TO-RAKU($type where RUBY_T_FLOAT) {
     self.Numeric
   }
 
-  multi method TO-P6($type where RUBY_T_ARRAY) {
-    self.List.map(*.TO-P6).list;
+  multi method TO-RAKU($type where RUBY_T_ARRAY) {
+    self.List.map(*.TO-RAKU).list;
   }
 
   method Str() {
-    if p6_rb_type(self) ~~ RUBY_T_STRING {
-      rb_to_p6_string(self);
+    if raku_rb_type(self) ~~ RUBY_T_STRING {
+      rb_to_raku_string(self);
     } else {
-      rb_to_p6_string( rb_funcall(self, rb_intern("to_s"), 0) );
+      rb_to_raku_string( rb_funcall(self, rb_intern("to_s"), 0) );
     }
   }
 
   method Numeric() {
-    given p6_rb_type(self) {
-      when RUBY_T_STRING { rb_to_p6_string(self).Numeric() }
-      when RUBY_T_FIXNUM { rb_to_p6_fixnum(self) }
-      when RUBY_T_FLOAT  { rb_to_p6_dbl(self) }
+    given raku_rb_type(self) {
+      when RUBY_T_STRING { rb_to_raku_string(self).Numeric() }
+      when RUBY_T_FIXNUM { rb_to_raku_fixnum(self) }
+      when RUBY_T_FLOAT  { rb_to_raku_dbl(self) }
       default { warn "Cannot convert to Numeric"; 0 }
     }
   }
 
   method Bool() {
-    given p6_rb_type(self) {
+    given raku_rb_type(self) {
       when RUBY_T_NIL   { False }
       when RUBY_T_FALSE { False }
       when RUBY_T_TRUE  { True }
@@ -124,23 +124,23 @@ class Inline::Ruby::RbValue is repr('CPointer') {
   }
 
   method List() {
-    given p6_rb_type(self) {
+    given raku_rb_type(self) {
       when RUBY_T_ARRAY {
-        my $len = p6_rb_array_length(self);
-        my @p6_array = [];
+        my $len = raku_rb_array_length(self);
+        my @raku_array = [];
         for ^$len -> $offset {
-          # @p6_array[$offset] = rb_ary_entry(self, $offset);
-          @p6_array[$offset] = ::('Inline::Ruby::RbObject').new(value => rb_ary_entry(self, $offset));
+          # @raku_array[$offset] = rb_ary_entry(self, $offset);
+          @raku_array[$offset] = ::('Inline::Ruby::RbObject').new(value => rb_ary_entry(self, $offset));
         }
-        @p6_array;
+        @raku_array;
       }
       default { warn "Cannot convert to List" }
     }
   }
 
-  # NativeCall routines for P6->RB conversions
-  sub p6_to_rb_int (int32 $n) returns Inline::Ruby::RbValue is native(RUBY) { * }
-  sub p6_to_rb_str (Str $s)   returns Inline::Ruby::RbValue is native(RUBY) { * }
+  # NativeCall routines for raku->RB conversions
+  sub raku_to_rb_int (int32 $n) returns Inline::Ruby::RbValue is native(RUBY) { * }
+  sub raku_to_rb_str (Str $s)   returns Inline::Ruby::RbValue is native(RUBY) { * }
 
 
   # Ruby values don't need to be converted
@@ -151,12 +151,12 @@ class Inline::Ruby::RbValue is repr('CPointer') {
 
   multi method from(Int $n) {
     # say "from int";
-    p6_to_rb_int($n);
+    raku_to_rb_int($n);
   }
 
   multi method from(Str $v) {
     # say "from str";
-    p6_to_rb_str($v);
+    raku_to_rb_str($v);
   }
 
   # Maybe not a good idea for :bleh<True> -> :bleh
@@ -166,7 +166,7 @@ class Inline::Ruby::RbValue is repr('CPointer') {
   }
 
   # VALUE rb_proc_new(VALUE (*)(ANYARGS/* VALUE yieldarg[, VALUE procarg] */), VALUE);
-  # sub p6_to_rb_proc (Inline::Ruby::RbValue, Inline::Ruby::RbValue) returns Inline::Ruby::RbValue;
+  # sub raku_to_rb_proc (Inline::Ruby::RbValue, Inline::Ruby::RbValue) returns Inline::Ruby::RbValue;
 
 
   multi method from($v) {

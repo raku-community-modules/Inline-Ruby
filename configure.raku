@@ -1,6 +1,3 @@
-#!/usr/bin/env perl6
-
-use v6;
 use LibraryMake;
 
 #| Call out to Ruby to figure out what compile flags we should use
@@ -32,4 +29,4 @@ process-makefile('.', %vars);
 shell(%vars<MAKE>);
 # shell('ls -laR');
 
-# vim: ft=perl6
+# vim: ft=raku

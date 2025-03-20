@@ -6,7 +6,7 @@ use Inline::Ruby::RbValue;
 class Inline::Ruby::RbObject {
 
   use NativeCall;
-  constant RUBY = %?RESOURCES<libraries/rbhelper>.Str;
+  constant RUBY = %?RESOURCES<libraries/rbhelper>;
 
   has Inline::Ruby::RbValue $.value;
 
@@ -18,7 +18,7 @@ class Inline::Ruby::RbObject {
   method join(*@x)  { self.FALLBACK("join",  |@x); }
   method map(*@x)   { self.FALLBACK("map",  |@x); }
 
-  # Specific type conversions, auto-called by Perl 6 sometimes
+  # Specific type conversions, auto-called by Raku sometimes
   method Str()     { $.value.Str() }
   method Numeric() { $.value.Numeric() }
   method Bool()    { $.value.Bool() }
@@ -26,7 +26,7 @@ class Inline::Ruby::RbObject {
   method Array()   { $.value.Array() }
 
   # Manually automatically convert deeply
-  method TO-P6()   { $.value.TO-P6 }
+  method TO-RAKU()   { $.value.TO-RAKU }
 
   method gist() {
     "«{ $.value }»:rb"
@@ -99,7 +99,7 @@ class Inline::Ruby::RbObject {
     Inline::Ruby::RbObject.from($result);
   }
 
-  #| Build a new Ruby Object from a Perl 6 value, first wrapping it
+  #| Build a new Ruby Object from a Raku value, first wrapping it
   #| as an Inline::Ruby::RbValue
   method from($p6_value) {
     if $p6_value ~~ Inline::Ruby::RbObject {

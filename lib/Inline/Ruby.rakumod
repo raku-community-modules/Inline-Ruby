@@ -1,7 +1,7 @@
 
 unit class Inline::Ruby;
 
-=NAME Inline::Ruby - Execute Ruby code and libraries from Perl 6 programs
+=NAME Inline::Ruby - Execute Ruby code and libraries from Raku programs
 
 =begin SYNOPSIS
   use Inline::Ruby;
@@ -20,7 +20,7 @@ unit class Inline::Ruby;
 =end SYNOPSIS
 
 =begin DESCRIPTION
-  Module for executing Ruby code and accessing Ruby libraries from Perl 6.
+  Module for executing Ruby code and accessing Ruby libraries from Raku.
 
   Simple types, such as numbers and strings, are automatically converted. For
   more complex types, such as arrays, mostly they are kept in their original
@@ -30,7 +30,7 @@ unit class Inline::Ruby;
 my $default_instance;
 
 use NativeCall;
-constant RUBY = %?RESOURCES<libraries/rbhelper>.Str;
+constant RUBY = %?RESOURCES<libraries/rbhelper>;
 
 use MONKEY-SEE-NO-EVAL;
 
@@ -130,7 +130,7 @@ role RubyPackage[Str $module] {
 sub ruby_import ($module) is export {
   # Skip already existing classes
   if ::("$module") !~~ Failure {
-    $*ERR.say: "P6→RB WARNING: NOT creating proxy for class «$module»:rb (class already defined)";
+    $*ERR.say: "Raku→RB WARNING: NOT creating proxy for class «$module»:rb (class already defined)";
     next;
   }
 
@@ -193,9 +193,9 @@ class ::CompUnit::Repository::Ruby does CompUnit::Repository {
   }
 
   method need(CompUnit::DependencySpecification $spec, CompUnit::PrecompilationRepository $precomp) {
-      # say "need {$spec.short-name} from {$spec.from}";
+      # say "need $spec.short-name() from $spec.from()";
       if $spec.from eq 'Ruby' {
-        # say "Loading a ruby lib... {$spec.perl}";
+        # say "Loading a ruby lib... $spec.raku()";
         # say "Loading a ruby lib...";
         Inline::Ruby::ruby_require($spec.short-name);
 

@@ -32,7 +32,7 @@ Inline::Ruby
 
 # DESCRIPTION
 
-Module for executing Ruby code and accessing Ruby libraries from Perl 6.
+Module for executing Ruby code and accessing Ruby libraries from Raku.
 
 # BUILD / DEV
 
@@ -41,7 +41,7 @@ In theory you can get it from zef. Let me know if that's true :)
 I'm running Ubuntu with ruby2.3-dev installed from apt. Then:
 
     ./configure.pl6  # Creates Makefile and runs make
-    make test        # or prove -e 'perl6 -Ilib' -v
+    make test        # or prove -e 'raku -Ilib' -v
 
 # STATUS
 
@@ -54,7 +54,7 @@ Develop branch [![Build Status](https://travis-ci.org/awwaiid/p6-Inline-Ruby.svg
   * Sometimes segfaults!
   * Only tested on my machine!
 * You can currently EVAL code
-* Some return types converted to Perl 6 values:
+* Some return types converted to Raku values:
   * TRUE
   * FALSE
   * NIL
@@ -71,7 +71,7 @@ More examples:
 
     # Use the :rb postfix to eval a string
     # In a string context, .to_s is called in ruby
-    # In perl6, .gist is called during printing, which wraps native-ruby values
+    # In Raku, .gist is called during printing, which wraps native-ruby values
     # in «...»:rb. So when you see that, you know you are looking at a wrapped
     # native Ruby object
 
@@ -81,7 +81,7 @@ More examples:
 
     say '5':rb + 2   #=> «7»:rb
 
-    # Do it the other way around and you'll get Perl6 values instead
+    # Do it the other way around and you'll get Raku values instead
 
     say 2 + '5':rb   #=> 7
 
@@ -92,13 +92,13 @@ More examples:
     #=> «[["id", "name"], ["1", "andy"], ["2", "bella"], ["3", "chad"], ["4", "dua"]]»:rb
 
     # That gets importing wrong sometimes, so you can do it more directly
-    # Here we'll slurp the file in Perl6, feeding the resulting string to Ruby JSON
+    # Here we'll slurp the file in Raku, feeding the resulting string to Ruby JSON
 
     BEGIN { ruby_require 'json', :import<JSON> };
     my $data = JSON.parse("examples/slide-up.json".IO.slurp);
     #=> «[{"type"=>"ClutterGroup", "id"=>"actor", ... }]»:rb
 
-    # Now $data contains a ruby Array with nested hashes, wrapped in a P6 proxy
+    # Now $data contains a ruby Array with nested hashes, wrapped in a Raku proxy
     # object. You can call methods and some operators, such as []. Note that ruby
     # uses [] and not {} for hash access! But we alias {} so you can still use it.
 
@@ -127,7 +127,7 @@ More examples:
 * Nice reference https://silverhammermba.github.io/emberb/c/
 * A big trick is deciding when and how much to auto-convert between langs
   * It's nice to leave things in Ruby if they start there, so we don't have to copy it all over
-  * Final values are nice to have as native Perl 6
+  * Final values are nice to have as native Raku
   * Maybe we should only explicit-convert
 * Mmm... maybe there should be two layers of .to_p6
   * One would do simple types -- strings, numbers

@@ -1,16 +1,17 @@
 {
+    "auth": "zef:raku-community-modules",
     "name" : "Inline::Ruby",
     "license" : "Artistic-2.0",
     "version" : "0.4.1",
-    "author" : "github:awwaiid",
-    "description" : "Use Ruby code and libraries in a Perl 6 program",
+    "author" : "Brock Wilcox",
+    "description" : "Use Ruby code and libraries in a Raku program",
     "perl" : "6.c",
-    "depends" : [ "LibraryMake" ],
+    "build-depends" : [ "LibraryMake" ],
     "provides" : {
-        "Inline::Ruby" : "lib/Inline/Ruby.pm6",
-        "Inline::Ruby::RbValue" : "lib/Inline/Ruby/RbValue.pm6",
-        "Inline::Ruby::RbObject" : "lib/Inline/Ruby/RbObject.pm6"
+        "Inline::Ruby" : "lib/Inline/Ruby.rakumod",
+        "Inline::Ruby::RbValue" : "lib/Inline/Ruby/RbValue.rakumod",
+        "Inline::Ruby::RbObject" : "lib/Inline/Ruby/RbObject.rakumod"
     },
     "resources"      : [ "libraries/rbhelper" ],
-    "source-url" : "git://github.com/awwaiid/p6-Inline-Ruby.git"
+    "source-url" : "git://github.com/raku-community-modules/Inline-Ruby.git"
 }
